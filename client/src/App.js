@@ -1,41 +1,53 @@
 
-
+import React from 'react';
 import './App.css';
-import React, { useState, useEffect } from 'react';
 
-function App() {
-  const [films, setFilms] = useState([
-    { id: 1, title: 'Dirty Dancing', year: '1800'},
-    { id: 2, title: 'Grease', year: '1900'},
-    { id: 3, title: 'Zombieland', year: '2000'},
-    { id: 4, title: 'Call me by your name', year: '2010'},
-    { id: 5, title: 'Pretty Woman', year: '2022'}
-]); 
+let url = 'https://movied.herokuapp.com/discover';
 
+class App extends React.Component {
+  // Constructor
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      films: [],
+      DataisLoaded: false,
+    };
+  }
 
-return (
-    <div className="container">
-        <h3 className="p-3 text-center">Discover - Display a list of films</h3>
-        <table className="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Year</th>
-                </tr>
-            </thead>
-            <tbody>
-                {films && films.map(user =>
-                    <tr key={user.id}>
-                        <td>{user.title}</td>
-                        <td>{user.year}</td>
-                        
-                    </tr>
-                )}
-            </tbody>
-        </table>
-    </div>
-);
+  // ComponentDidMount is used to
+  // execute the code
+  componentDidMount() {
+    fetch(url)
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState({
+          films: json,
+          DataisLoaded: true,
+        });
+      });
+  }
+  render() {
+    const { DataisLoaded, films } = this.state;
+    if (!DataisLoaded)
+      return (
+        <div>
+          <h1> Please wait ... </h1>{' '}
+        </div>
+      );
+
+    return (
+      <div className='App'>
+        <h1> Display Films </h1>{' '}
+        {films.map((films) => (
+          <ol key={films.id}>
+            Title: {films.original_title}, Language: {films.original_language}, Overview:{' '}
+            {films.overview}, Release date: {films.release_date}
+          </ol>
+        ))}
+      </div>
+    );
+  }
 }
 
 export default App;
